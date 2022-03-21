@@ -342,8 +342,20 @@ module ApplicationTests
     test "Current scopes in AR models are reset on reloading" do
       rails %w(generate model post)
       rails %w(db:migrate)
+      # The on_unload callback does not have to assume Comment.< is the normal one.
+      app_file "app/models/comment.rb", <<~RUBY
+        class Comment
+          class << self
+            def <(other)
+              raise
+            end
+          end
+        end
+      RUBY
+
       require "#{app_path}/config/environment"
 
+      Comment
       Post.current_scope = Post
       assert_not_nil ActiveRecord::Scoping::ScopeRegistry.current_scope(Post) # precondition
 

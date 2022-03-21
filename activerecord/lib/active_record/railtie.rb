@@ -394,7 +394,7 @@ To keep using the current cache store, you can turn off cache versioning entirel
       config.after_initialize do
         unless app.config.cache_classes
           Rails.autoloaders.main.on_unload do |_cpath, value, _abspath|
-            value.current_scope = nil if value.is_a?(Class) && value < ActiveRecord::Base
+            value.current_scope = nil if value.is_a?(Class) && ActiveRecord::Base > value
           end
         end
       end
